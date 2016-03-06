@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slider</title>
+    <link rel="stylesheet" href="css/leaflet.css" />
+    <link rel="stylesheet" href="css/leaflet.wmslegend.css" />
+</head>
+<body>
+    <div>
+        <button id="slider" style="margin: 10px" onclick="Slider()"> Слайдер мне! </button>
+    </div>
+    <div id="map" style="height: 700px"></div>
+
+    <script src="js/leaflet.js"></script>
+    <script src="js/leaflet-side-by-side.min.js"></script>
+    <script src="js/leaflet.wmslegend.js"></script>
+    <script>
+        var map = L.map('map', {center: [53.03, 52.16], zoom: 10});
+        uri = "http://10.10.10.11:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=15&LAYER=buzuluk:species";
+        L.wmsLegend(uri);
+        var myLayer1 = L.tileLayer.wms("http://10.10.10.11:8080/geoserver/buzuluk/wms", {
+            layers: 'buzuluk:species',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.0',
+            attribution: "myattribution"
+        }).addTo(map);
+
+        var myLayer2 = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+            maxZoom: 20,
+            attribution: ''
+        }).addTo(map);
+
+        var sliderVar;
+        function Slider() {
+            sliderVar = L.control.sideBySide(myLayer2, myLayer1);
+            sliderVar.addTo(map);
+        }
+
+    </script>
+</body>
+</html>

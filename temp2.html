@@ -22,7 +22,7 @@
 
     <script src="js/jquery-1.12.0.min.js"></script>
     <script>
-      var map = L.map('map', {center: [53.03, 52.16], zoom: 10});
+      var map = L.map('map', {center: [53.03, 52.16], zoom: 11});
 
       L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
             maxZoom: 20,
@@ -36,7 +36,7 @@
         var condition = '';
         var owsrootUrl = 'http://192.168.0.117:8080/geoserver/Geoportal/ows';
         var WFSLayer = null;
-        map.on('click', function addWV2015(e) {
+        map.on('click', function addCluster(e) {
             if (map.hasLayer(WFSLayer)) {
                 WFSLayer.clearLayers();
             }
@@ -46,7 +46,7 @@
                 request: 'GetFeature',
                 typeName: 'Geoportal:species',
                 outputFormat: 'text/javascript',
-                cql_filter: 'CONTAINS(the_geom, POINT('+ e.latlng.lat + ' ' + e.latlng.lng +'))',
+                cql_filter: 'CONTAINS(geom, POINT('+ e.latlng.lat + ' ' + e.latlng.lng +'))',
                 format_options: 'callback:getJson',
                 maxFeatures : '25',
 
@@ -66,15 +66,21 @@
                             return {
                                 stroke: true,
                                 weight: 3,
-                                //color: '#FF0000',
-                                //opacity: 1,
+                                color: '#FF0000',
+                                opacity: 1,
                                 fillColor: 'FFFFFF',
                                 fillOpacity: 0
                             };
                         },
                         onEachFeature: function (feature, layer) {
                             popupOptions = {maxWidth: 250};
-                            layer.bindPopup((feature.properties.PR_PORODA)
+                            layer.bindPopup((
+                                    "Преобл. порода: " + feature.properties.dominant.bold() +
+                            "<br>Формула леса:       " + feature.properties.formula.bold() +
+                            "<br>Лесничество:        " + feature.properties.forestry.bold() +
+                            "<br>№ квартала:        " + feature.properties.block_id.toString().bold() +
+                            "<br>№ выдела:          " + feature.properties.cluster_id.toString().bold() +
+                            "<br>Возраст:            " + feature.properties.age.toString().bold())
                                     , popupOptions);
                         }
                     }).addTo(map);
